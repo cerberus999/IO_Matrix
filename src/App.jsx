@@ -1,4 +1,6 @@
+import React from 'react';
 import { useState } from 'react'
+
 import './App.css'
 import Fraction from 'fraction.js'
 
@@ -8,7 +10,12 @@ function App() {
     col: 4
   });
   const [steps, setSteps] = useState([])
-  const [matrix, setMatrix] = useState([[0,'x1','x2','x3','res'],['z',-5,-3,-2,0],['x1',3,"3/2",1,30],['x2',2,3,2,40],['x3',4,3,2,60]])
+  const [matrix, setMatrix] = useState(
+    [[0,'x1','x2','x3','res'],
+    ['z',-5,-3,-2,0],
+    ['x1',3,"3/2",1,30],
+    ['x2',2,3,2,40],
+    ['x3',4,3,2,60]])
   const [operations, setOperations] = useState([])
 
   const handleChange = (rowIndex, colIndex, event) => {
@@ -72,11 +79,12 @@ function App() {
       
       if(i > 0 && new Fraction(''+val).compare(minor) == -1){ 
         //console.log(val);
-       if(new Fraction(''+val).compare(0) == -1){
+        //borrar if *****
+       //if(new Fraction(''+val).compare(0) == -1){
         minor = new Fraction(''+val)
         x.b = i
         //console.log("indice " + x.b)
-       }
+       //}
       }
     })
 
@@ -84,7 +92,7 @@ function App() {
     minor = 99999
     for(let j=2;j<matrix.length && x.b>0;j++){
       let aux = new Fraction(copyM[j][x.b])
-      console.log(aux)
+      //console.log(aux)
       
       if(+aux != 0){
         // console.log(x.b);
