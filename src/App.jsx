@@ -4,6 +4,8 @@ import { useState } from 'react'
 import './App.css'
 import Fraction from 'fraction.js'
 
+let opr = []
+
 function App() {
   const [data, setData] = useState({
     row: 2,
@@ -55,8 +57,14 @@ function App() {
       let {a,b} = hallarPivote()
 
       if(a > 0 && b > 0){
+    
+        opr = []
         normalizar(a,b)
+        setOperations([operations,opr])
+        
+        opr = []
         reducirACeroFilas(a,b)
+        setOperations([operations,opr])
       }else{
         flag = false;
       }
@@ -64,8 +72,6 @@ function App() {
   }
 
   const hallarPivote = () => {
-
-
     let copyM = [...steps[steps.length-1]]
     
     let x = {a: 0, b: 0}
@@ -108,6 +114,7 @@ function App() {
     }
     // console.log(x.a, x.b);
 
+
     if(minor <= 0){
       x = {a: 100, b: 100}
     }
@@ -121,6 +128,7 @@ function App() {
     let value = copyM[f][c]
     // console.log(value);
   
+    opr.add(`F:${f},C${c} * (${value})`)
     copyM[+f] = copyM[+f].map((v,vi) => {
       let res = v
       if(vi != 0){
@@ -147,7 +155,7 @@ function App() {
       copyM[i] = copyM[i].map((val, ci) => {
         // console.log(val);
         if(+f != 0 && +f != i && +c != 0 && +ci != 0){
-
+          opr.add(`F:${f},C${c} * (${val})`)
           return new Fraction(copyM[f][ci]).mul(aux).add(val).toFraction()
         }
         else{

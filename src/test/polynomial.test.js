@@ -26,6 +26,11 @@ describe('Pruebas de argumentos', () => {
         expect(input("4/6M")).toStrictEqual(["","4/6"])
     })
 })
+describe('Pruebas de argumentos', () => {
+    test("test input fraccion alg", () => {
+        expect(input("M")).toStrictEqual(["","1"])
+    })
+})
 
 //Suma
 
@@ -89,6 +94,31 @@ describe('Pruebas de multiplicacion algebraica', () => {
 })
 describe('Pruebas de multiplicacion algebraica', () => {
     test("test mult", () => {
-        expect(mult(["0"],["2","-3"])).toStrictEqual("0")
+        expect(mult(["0",""],["2","-3"])).toStrictEqual("0")
+    })
+})
+describe('Pruebas de multiplicacion algebraica', () => {
+    test("test inv", () => {
+        expect(mult(["-1",""],["2","-3"])).toStrictEqual("-2+3M")
+    })
+})
+describe('Pruebas de multiplicacion algebraica', () => {
+    test("test M", () => {
+        expect(mult(["","1"],["2",""])).toStrictEqual("2M")
+    })
+})
+describe('Pruebas de multiplicacion algebraica', () => {
+    test("test M", () => {
+        expect(mult(["","-1"],["2",""])).toStrictEqual("-2M")
+    })
+})
+describe('Pruebas de multiplicacion algebraica', () => {
+    test("test M", () => {
+        expect(mult(["0",""],["2","1/3"])).toStrictEqual("0")
+    })
+})
+describe('Pruebas de multiplicacion algebraica', () => {
+    test("test M", () => {
+        expect(mult(["2","1/5"],["2",""])).toStrictEqual("4+2/5M")
     })
 })
