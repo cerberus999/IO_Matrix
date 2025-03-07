@@ -32,21 +32,23 @@ export function sum(p1, p2){
  */
 export function input(value){
     let res
-    let regex = /[+-]/g
-    value = ""+value
-    let prt = value.split(regex)
-    if(value.search(regex) >= 0){
-        if(value.search("-") >= 0 ){
-            prt[1] = "-"+prt[1]
-        }
-        res = [prt[0], prt[1].slice(0,prt[1].length-1)]
-    }else if(value.search("M") > 0){
-        res = value.search('-') == 0?  ["",'-1']:["", value.slice(0,value.length-1)]
-    }else if(value.search("M") == 0){
-        res = ["","1"]
-    }
-    else{
+    if(''+value.search('M') < 0){
         res = [value, ""]
+    }else{       
+        let regex = /\b[+-]/g
+        let regexMinus = /\b[-]/g
+        value = ""+value
+        let prt = value.split(regex)
+        if(value.search(regex) >= 0){
+            if(value.search(regexMinus) > 0 ){
+                prt[1] = "-"+prt[1]
+            }
+            res = [prt[0], prt[1].slice(0,prt[1].length-1)]
+        }else if(value.search("M") > 0){
+            res = ["", value.slice(0,value.length-1)]
+        }else if(value.search("M") == 0){
+            res = ["","1"]
+        }
     }
     return res
 }
@@ -84,4 +86,10 @@ export function mult(p1, p2) {
     } 
     res = res == ''? "0": res
     return res 
+}
+
+export function comp(p1, p2) {
+    p1 = p1.map(x => x == ""? "0":x)
+    p2 = p2.map(x => x == ""? "0":x)
+    return new Fraction(p1[0]).compare(new Fraction(p2[0]))
 }

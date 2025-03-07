@@ -1,5 +1,5 @@
 import {describe, expect, test} from 'vitest';
-import {input, sum, mult} from '../utils/polynomial';
+import {input, sum, mult, comp} from '../utils/polynomial';
 
 
 //Argumentos
@@ -20,6 +20,11 @@ describe('Pruebas de argumentos', () => {
         expect(input("1/2")).toStrictEqual(["1/2", ""])
     })
 })
+describe('Pruebas de argumentos', () => {
+    test("test input fraccion", () => {
+        expect(input("-1")).toStrictEqual(["-1", ""])
+    })
+})
 
 describe('Pruebas de argumentos', () => {
     test("test input fraccion alg", () => {
@@ -29,6 +34,11 @@ describe('Pruebas de argumentos', () => {
 describe('Pruebas de argumentos', () => {
     test("test input fraccion alg", () => {
         expect(input("M")).toStrictEqual(["","1"])
+    })
+})
+describe('Pruebas de argumentos', () => {
+    test("test input fraccion alg", () => {
+        expect(input("-600+2M")).toStrictEqual(["-600","2"])
     })
 })
 
@@ -120,5 +130,50 @@ describe('Pruebas de multiplicacion algebraica', () => {
 describe('Pruebas de multiplicacion algebraica', () => {
     test("test M", () => {
         expect(mult(["2","1/5"],["2",""])).toStrictEqual("4+2/5M")
+    })
+})
+describe('Pruebas de multiplicacion algebraica', () => {
+    test("test M", () => {
+        expect(mult(["-250","-1/2"],["-1",""])).toStrictEqual("250+1/2M")
+    })
+})
+
+
+//Compare tests
+describe('Pruebas de multiplicacion algebraica', () => {
+    test("test compare", () => {
+        expect(comp(["2","1/5"],["2",""])).toStrictEqual(0)
+    })
+})
+describe('Pruebas de multiplicacion algebraica', () => {
+    test("test compare", () => {
+        expect(comp(["2","1/5"],["-1","2/3"])).toStrictEqual(1)
+    })
+})
+describe('Pruebas de multiplicacion algebraica', () => {
+    test("test compare", () => {
+        expect(comp(["-4","1/5"],["2","1/5"])).toStrictEqual(-1)
+    })
+})
+
+//Mult Test
+describe('Pruebas de operaciones', () => {
+    test("test inversa negativa", () => {
+        expect(mult(input('-250-1/2M'),input('-1'))).toStrictEqual("250+1/2M")
+    })
+})
+describe('Pruebas de operaciones', () => {
+    test("test inversa negativa", () => {
+        expect(input('-250-1/2M')).toStrictEqual(["-250","-1/2"])
+    })
+})
+describe('Pruebas de operaciones', () => {
+    test("test inversa negativa", () => {
+        expect(mult(input('-1/2M'),input('-1'))).toStrictEqual("1/2M")
+    })
+})
+describe('Pruebas de operaciones', () => {
+    test("test inversa negativa", () => {
+        expect(input('-1/2M')).toStrictEqual(['','-1/2'])
     })
 })

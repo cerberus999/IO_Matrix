@@ -1,10 +1,11 @@
 import React from 'react';
-import { useState } from 'react'
+import { useState } from 'react';
+import {sum, comp, mult, input} from './utils/polynomial';
 
 import './App.css'
 import Fraction from 'fraction.js'
 
-let opr = []
+let opr
 
 function App() {
   const [data, setData] = useState({
@@ -13,11 +14,11 @@ function App() {
   });
   const [steps, setSteps] = useState([])
   const [matrix, setMatrix] = useState(
-    [[0,'x1','x2','x3','res'],
-    ['z',-5,-3,-2,0],
-    ['x1',3,"3/2",1,30],
-    ['x2',2,3,2,40],
-    ['x3',4,3,2,60]])
+    [[0,'x1','x2','x3','s1','s2','s3','res'],
+    ['z','-800','-2000',-1400,'0','0','0','0'],
+    ['s1',3,13,9,1,0,0,100],
+    ['s2',7,30,32,0,1,0,500],
+    ['s3',20,250,170,0,0,1,3000]])
   const [operations, setOperations] = useState([])
 
   const handleChange = (rowIndex, colIndex, event) => {
@@ -46,6 +47,10 @@ function App() {
     setMatrix(copy)
   }
 
+  // useEffect(( ) => {
+  //   console.log(operations)}
+  // ,operations)
+
   const calcular = () => {
     
     let flag = true
@@ -60,11 +65,10 @@ function App() {
     
         opr = []
         normalizar(a,b)
-        setOperations([operations,opr])
         
         opr = []
         reducirACeroFilas(a,b)
-        setOperations([operations,opr])
+        //setOperations([...operations,[opr]])
       }else{
         flag = false;
       }
@@ -74,6 +78,8 @@ function App() {
   const hallarPivote = () => {
     let copyM = [...steps[steps.length-1]]
     
+    //b es la columna
+
     let x = {a: 0, b: 0}
     let minor = 0
     
@@ -82,15 +88,19 @@ function App() {
     
     //console.log(copyRow);
     copyRow.map((val,i) => {
-      
-      if(i > 0 && new Fraction(''+val).compare(minor) == -1){ 
+      if(i > 0){
         //console.log(val);
-        //borrar if *****
-       //if(new Fraction(''+val).compare(0) == -1){
-        minor = new Fraction(''+val)
-        x.b = i
-        //console.log("indice " + x.b)
-       //}
+        if((""+val).search("M") >= 0 || (''+minor).search('M') >= 0){
+          if(comp(input(''+val), input(''+minor)) < 0 ){
+            minor = sum(input(''+val),['',''])
+            x.b = i
+          }
+        }else{
+          if(new Fraction(''+val).compare(minor) == -1){
+            minor = new Fraction(''+val)
+            x.b = i
+          }
+        }
       }
     })
 
@@ -101,10 +111,11 @@ function App() {
       //console.log(aux)
       
       if(+aux != 0){
-        // console.log(x.b);
-        let elem = new Fraction(copyM[j][copyM[x.b].length-1])
+        let elem = new Fraction(copyM[j][copyM[0].length-1])
         let auxDiv
         auxDiv = elem.div(aux)
+        console.log(auxDiv);
+        
         
         if( auxDiv.compare(minor) < 0 && auxDiv.compare(0) > 0){
           minor = auxDiv
@@ -128,7 +139,7 @@ function App() {
     let value = copyM[f][c]
     // console.log(value);
   
-    opr.add(`F:${f},C${c} * (${value})`)
+    opr = (`F:${f} * (${new Fraction(1).div(value).toFraction()})`)
     copyM[+f] = copyM[+f].map((v,vi) => {
       let res = v
       if(vi != 0){
@@ -139,7 +150,9 @@ function App() {
     
     steps.push(copyM)
     setSteps(steps => ([...steps,[...copyM]]))
-    // console.log(steps)
+
+    operations.push([opr])
+    //setOperations([...operations,[opr]])
   }
 
 
@@ -149,35 +162,48 @@ function App() {
 
     let aux
     for(let i=1;i<copyM.length;i++){
-      aux = new Fraction(copyM[i][c]).mul(-1)
+      if((''+copyM[i][c]).search('M') >= 0){
+        aux = mult(input(copyM[i][c]),input('-1'))
+      }else{
+        aux = new Fraction(copyM[i][c]).mul(-1)
+      }
       // console.log(aux);
       
-      copyM[i] = copyM[i].map((val, ci) => {
-        // console.log(val);
-        if(+f != 0 && +f != i && +c != 0 && +ci != 0){
-          opr.add(`F:${f},C${c} * (${val})`)
-          return new Fraction(copyM[f][ci]).mul(aux).add(val).toFraction()
-        }
-        else{
-          return val
-        }
-      })
+      if(+f != 0 && +f != i && +c != 0){
+        opr = [...opr,`F:${f} * (${(''+aux).search('M') < 0? aux.toFraction() : sum(input(''+aux),input('0'))}) + F:${i}`]
+        copyM[i] = copyM[i].map((val, ci) => {
+          let res
+          // console.log(val);
+          if(+ci != 0){
+            if((''+aux).search('M') >= 0){
+              
+              res = sum(input(mult(input(''+copyM[f][ci]),input(''+aux))),input(''+val))
+
+            }else{
+              res =  new Fraction(''+copyM[f][ci]).mul(aux).add(val).toFraction()
+            }
+          }
+          else{
+            res = val
+          }
+          return res
+        })
+      }
     }
 
     setSteps(steps => ([...steps,copyM]))
     steps.push(copyM)
     
+    operations.push(opr)
   }
 
   const clear = () => {
     setSteps([])
+    setOperations([])
   }
-
+  
   return (
     <>
-      <div style={{position: 'absolute', left: '80px', rotate: '-90deg'}}>
-        <h2 style={{color: '#242424'}}>❤ Jaly Daniela ❤</h2>
-      </div>
       <h1>Matrix</h1>
       <input onChange={(e) => handleInput(e)} name="row" type="number" placeholder='Num of Variables Hor' /><br />
       <input onChange={(e) => handleInput(e)}  name="col" type="number" placeholder='Num of Variables Vert' /><br />
@@ -203,7 +229,7 @@ function App() {
                       )
                     }else{
                       return (
-                        <td style={f == 1? {backgroundColor: 'yellow'}: {}} key={`x${f}y${c}`} >
+                        <td style={f == 1? {backgroundColor: 'yellow'}: {}} key={`xl${f}yl${c}`} >
                           <input onChange={(e) => handleChange(f,c,e)} value={x}/>
                         </td>
                       )
@@ -217,34 +243,49 @@ function App() {
       </div>
       <button onClick={calcular}>Calcular</button>
 
-      <div style={{display: 'flex', flexWrap: 'wrap'}}>
+      <div style={{display: 'flex', flexWrap: 'wrap'}}> 
         {steps.map((mat,mi) => {
           return (
-            <table>
-            <thead>
-              <tr>
-                <th>
-                  {mi}
-                </th>
-              </tr>
-            </thead>
-            <tbody key={mi} style={{backgroundColor: 'aquamarine', margin: '0.2em'}} >
-              {mat.map((xRow,xi) => {
-                return(
-                  <tr key={xi}>
-                    {xRow.map((y,yi) => {
-                      return (
-                        <td style={xi == 1? {backgroundColor: 'yellow'}: {}} key={yi}><input readOnly value={y}/></td>
-                      )
-                    })}
-                  </tr>
-                )
-              })}
-            </tbody>
+            <div key={`mat${mi}`}>
+              <table>
+              <thead>
+                <tr>
+                  <th>
+                    {mi}
+                  </th>
+                </tr>
+              </thead>
+              <tbody key={`k${mi}`} style={{backgroundColor: 'aquamarine', margin: '0.2em'}} >
+                {mat.map((xRow,xi) => {
+                  return(
+                    <tr key={`km${xi}`}>
+                      {xRow.map((y,yi) => {
+                        return (
+                          <td key={`xn${yi}`} style={xi == 1? {backgroundColor: 'yellow'}: {}}><input readOnly value={y}/></td>
+                        )
+                      })}
+                    </tr>
+                  )
+                })}
+              </tbody>
             </table>
+          </div>
           )})}
-          <button onClick={clear} type="button">Clear</button>
-      </div>
+        </div>
+        <div>
+          {operations.map((x, index) => {
+            return (
+              <div key={`xop${index}`}>
+                <p>Matriz: {index}</p>
+                {x.map((y,yxi) => {
+                  return (
+                    <div key={`j${yxi}`}>{y}</div>
+                  )
+                })}</div>
+            )
+          })}
+        </div>
+      <button onClick={clear} type="button">Clear</button>
     </>
   )
 }
